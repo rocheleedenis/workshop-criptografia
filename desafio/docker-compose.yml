@@ -15,17 +15,17 @@ services:
     depends_on:
       - mysql-challenge
 
-  # client:
-  #   build:
-  #     context: ./client
-  #   container_name: client
-  #   # command: docker-entrypoint.sh
-  #   volumes:
-  #     - ./client:/app
-  #   networks:
-  #     - challenge
-  #   depends_on:
-  #     - server
+  client:
+    build:
+      context: ./client
+    container_name: client
+    entrypoint: bash -c 'while !</dev/tcp/server/8000; do sleep 1; done; docker-entrypoint.sh'
+    volumes:
+      - ./client:/app
+    networks:
+      - challenge
+    depends_on:
+      - server
 
   mysql-challenge:
     image: mysql:8
