@@ -1,0 +1,46 @@
+version: '3.7'
+
+services:
+  server:
+    build:
+      context: server
+    container_name: server
+    networks:
+      - challenge
+    volumes:
+      - ./server:/app
+    ports:
+      - 8000:8000
+    entrypoint: wait-for mysql-challenge:3306 -t 40 -- php artisan serve --host=0.0.0.0:8000
+    depends_on:
+      - mysql-challenge
+
+  # client:
+  #   build:
+  #     context: ./client
+  #   container_name: client
+  #   # command: docker-entrypoint.sh
+  #   volumes:
+  #     - ./client:/app
+  #   networks:
+  #     - challenge
+  #   depends_on:
+  #     - server
+
+  mysql-challenge:
+    image: mysql:8
+    # command: --innodb-use-native-aio=0
+    container_name: mysql-challenge
+    restart: always
+    tty: true
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=challenge
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - challenge
+
+networks:
+  challenge:
+    driver: bridge
