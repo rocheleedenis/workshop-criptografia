@@ -11,7 +11,7 @@ services:
       - ./server:/app
     ports:
       - 8000:8000
-    entrypoint: wait-for mysql-challenge:3306 -t 40 -- php artisan serve --host=0.0.0.0:8000
+    entrypoint: bash -c 'while !</dev/tcp/mysql-challenge/3306; do sleep 1; done; php artisan serve --host=0.0.0.0:8000'
     depends_on:
       - mysql-challenge
 
